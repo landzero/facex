@@ -7,14 +7,14 @@
 
 #include <dlib/logger.h>
 
-FX::Server::Server() : dlib::server_iostream() {
-  _resultStore = NULL;
-  set_listening_ip("127.0.0.1");
-}
+FX::Server::Server() : dlib::server_iostream() {}
+
+void FX::Server::SetBind(const std::string &bind) { set_listening_ip(bind); }
 
 void FX::Server::SetPort(int port) { set_listening_port(port); }
 
 void FX::Server::Start() { start(); }
+
 void FX::Server::StartAsync() { start_async(); }
 
 void FX::Server::SetResultStore(FX::ResultStore *resultStore) {
@@ -27,8 +27,11 @@ void FX::Server::on_connect(std::istream &in, std::ostream &out,
                             unsigned short foreign_port,
                             unsigned short local_port,
                             dlib::uint64 connection_id) {
-  while (_resultStore != NULL && out.good()) {
+  std::cout << "server: new connection [" << connection_id << "]" << std::endl;
+  while (_resultStore != nullptr && out.good()) {
     _resultStore->Get().Serialize(out);
     _resultStore->Wait();
   }
+  std::cout << "server: connection [" << connection_id << "] closed"
+            << std::endl;
 }

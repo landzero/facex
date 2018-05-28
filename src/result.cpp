@@ -14,8 +14,9 @@ void FX::Result::Serialize(std::ostream &out) {
     out << std::to_string(this->landmarks[i].x) << ","
         << std::to_string(this->landmarks[i].y) << ";";
   }
-  out << std::to_string(this->nose.x) << "," << std::to_string(this->nose.y)
-      << "," << std::to_string(this->nose.z) << ";";
+  out << std::to_string(this->location.x) << ","
+      << std::to_string(this->location.y) << ","
+      << std::to_string(this->location.z) << ";";
 
   out << std::to_string(this->direction[0]) << ","
       << std::to_string(this->direction[1]) << ","

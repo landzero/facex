@@ -20,8 +20,8 @@ public:
   cv::Size2d size;
   // 68-points standard face landmarks
   std::vector<cv::Point2d> landmarks;
-  // calculated nose start
-  cv::Point3d nose;
+  // calculated location of head
+  cv::Point3d location;
   // calculated face direction
   cv::Vec3d direction;
 

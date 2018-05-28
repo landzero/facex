@@ -44,3 +44,7 @@ CTestTestfile.cmake
 
 # output
 facex
+
+# CLion
+*.cbp
+.idea/

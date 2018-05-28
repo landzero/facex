@@ -16,12 +16,16 @@ public:
     _mutex = new dlib::mutex();
     _signaler = new dlib::signaler(*_mutex);
   }
+
   ~Store() {
     delete _signaler;
     delete _mutex;
   }
+
   void Wait() { _signaler->wait(); }
+
   T Get() { return _v; }
+
   void Set(const T &v) {
     _v = v;
     _signaler->broadcast();

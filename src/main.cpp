@@ -3,23 +3,68 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
+#include "capture.h"
 #include "server.h"
 
+#include <dlib/cmd_line_parser.h>
+
 int main(int argc, char **argv) {
-  FX::Result res;
-  res.size.width = 100;
-  FX::ResultStore rstore;
-  rstore.Set(res);
-  FX::Server server;
-  server.SetResultStore(&rstore);
-  server.SetPort(6699);
-  server.StartAsync();
-  int i = 0;
-  for (;;) {
-    res.size.width = 100 + i;
-    rstore.Set(res);
-    i++;
-    sleep(1);
+  dlib::command_line_parser cli;
+  cli.add_option("camera", "camera to open, default 0", 1);
+  cli.add_option("fps", "camera fps, default 30", 1);
+  cli.add_option("width", "camera width, default 800", 1);
+  cli.add_option("height", "camera height, default 600", 1);
+  cli.add_option("bind", "host to bind, default '127.0.0.1'", 1);
+  cli.add_option("port", "port to listen, default 6699", 1);
+  cli.set_group_name("Extra Options");
+  cli.add_option("help", "display this help message");
+  cli.add_option("h", "short for 'help'");
+  cli.parse(argc, argv);
+
+  const char *one_time_options[] = {"help", "h"};
+  cli.check_one_time_options(one_time_options);
+
+  if (cli.option("help") || cli.option("h")) {
+    std::cout << "Usage:" << std::endl;
+    std::cout << "  facex --camera 1 --width 800 --height 600 --bind 127.0.0.1 "
+                 "--port 6699"
+              << std::endl;
+    cli.print_options();
+    return EXIT_SUCCESS;
   }
-  return 0;
+
+  const int camera = dlib::get_option(cli, "camera", 0);
+  const double fps = dlib::get_option(cli, "fps", 30);
+  const double width = dlib::get_option(cli, "width", 800);
+  const double height = dlib::get_option(cli, "height", 600);
+  const std::string bind = dlib::get_option(cli, "bind", "127.0.0.1");
+  const int port = dlib::get_option(cli, "port", 6699);
+
+  FX::ResultStore resultStore;
+  FX::Capture cap;
+  FX::Server server;
+
+  cap.SetResultStore(&resultStore);
+  server.SetResultStore(&resultStore);
+
+  server.SetBind(bind);
+  server.SetPort(port);
+  server.StartAsync();
+
+  std::cout << "server: started " << bind << ":" << port << std::endl;
+
+  cap.Open(camera);
+  if (!cap.IsOpened()) {
+    std::cout << "camera: failed to open [" << camera << "]" << std::endl;
+    return EXIT_FAILURE;
+  }
+
+  cap.SetSize(width, height);
+  cap.SetFPS(fps);
+
+  std::cout << "camera: opened [" << camera << "] " << width << "x" << height
+            << ", FPS:" << fps << std::endl;
+
+  cap.Start();
+  return EXIT_SUCCESS;
 }
