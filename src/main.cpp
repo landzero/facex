@@ -10,15 +10,17 @@
 
 int main(int argc, char **argv) {
   dlib::command_line_parser cli;
+  cli.add_option("help", "display this help message");
+  cli.add_option("h", "short for 'help'");
+  cli.set_group_name("Camera Options");
   cli.add_option("camera", "camera to open, default 0", 1);
   cli.add_option("fps", "camera fps, default 30", 1);
   cli.add_option("width", "camera width, default 800", 1);
   cli.add_option("height", "camera height, default 600", 1);
+  cli.set_group_name("Server Options");
   cli.add_option("bind", "host to bind, default '127.0.0.1'", 1);
   cli.add_option("port", "port to listen, default 6699", 1);
-  cli.set_group_name("Extra Options");
-  cli.add_option("help", "display this help message");
-  cli.add_option("h", "short for 'help'");
+
   cli.parse(argc, argv);
 
   const char *one_time_options[] = {"help", "h"};
@@ -28,6 +30,7 @@ int main(int argc, char **argv) {
     std::cout << "Usage:" << std::endl;
     std::cout << "  facex --camera 1 --width 800 --height 600 --bind 127.0.0.1 "
                  "--port 6699"
+              << std::endl
               << std::endl;
     cli.print_options();
     return EXIT_SUCCESS;
