@@ -20,9 +20,9 @@ brew install cmake
 
 ## Build
 
-build with cmake
+build with `Release` config for best compiler optimization.
 
 ```bash
-cmake .
+cmake -DCMAKE_VERBOSE_MAKEFILE=ON -DCMAKE_BUILD_TYPE=Release .
 make
 ```

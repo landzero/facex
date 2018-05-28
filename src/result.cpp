@@ -10,7 +10,7 @@
 void FX::Result::Serialize(std::ostream &out) {
   out << std::to_string(this->size.width) << ","
       << std::to_string(this->size.height) << ";";
-  for (int i = 0; i < this->landmarks.size(); i++) {
+  for (size_t i = 0; i < this->landmarks.size(); i++) {
     out << std::to_string(this->landmarks[i].x) << ","
         << std::to_string(this->landmarks[i].y) << ";";
   }

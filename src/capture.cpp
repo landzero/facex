@@ -103,7 +103,7 @@ void FX::Capture::Start() {
     // detect faces
     faces = detector(dimSmall);
     if (faces.size() == 0) {
-      continue;
+      goto loop_end;
     }
 
     // find largest face
@@ -134,6 +134,7 @@ void FX::Capture::Start() {
     }
 
     // calculate FPS
+  loop_end:
     count++;
     if (count == 100) {
       t = ((double)cv::getTickCount() - t) / cv::getTickFrequency();

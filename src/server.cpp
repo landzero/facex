@@ -27,6 +27,11 @@ void FX::Server::on_connect(std::istream &in, std::ostream &out,
                             unsigned short foreign_port,
                             unsigned short local_port,
                             dlib::uint64 connection_id) {
+  (void)in;
+  (void)foreign_ip;
+  (void)local_ip;
+  (void)foreign_port;
+  (void)local_port;
   std::cout << "server: new connection [" << connection_id << "]" << std::endl;
   while (_resultStore != nullptr && out.good()) {
     _resultStore->Get().Serialize(out);
