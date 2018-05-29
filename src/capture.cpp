@@ -4,16 +4,14 @@
 // https://opensource.org/licenses/MIT
 
 #include "capture.h"
+#include "resolver.h"
 
-#include <dlib/image_processing.h>
-#include <dlib/image_processing/frontal_face_detector.h>
-#include <dlib/misc_api.h>
 #include <dlib/opencv.h>
 
 #define NUM_LANDMARKS 68
 #define DOWNSCALE_RATIO 4
 
-bool _IsFaceDetectionValid(dlib::full_object_detection &det) {
+bool _isFaceDetectionValid(dlib::full_object_detection &det) {
   if (det.num_parts() != NUM_LANDMARKS)
     return false;
   for (size_t i = 0; i < det.num_parts(); i++)
@@ -22,40 +20,8 @@ bool _IsFaceDetectionValid(dlib::full_object_detection &det) {
   return true;
 }
 
-bool _CompareRectangleArea(dlib::rectangle lhs, dlib::rectangle rhs) {
+bool _compareRectangleArea(dlib::rectangle lhs, dlib::rectangle rhs) {
   return lhs.area() < rhs.area();
-}
-
-std::vector<cv::Point3d> _ReferencePosePoints() {
-  std::vector<cv::Point3d> points;
-  points.push_back(cv::Point3d(
-      0.0f, 0.0f, 0.0f)); // The first must be (0,0,0) while using POSIT
-  points.push_back(cv::Point3d(0.0f, -330.0f, -65.0f));
-  points.push_back(cv::Point3d(-225.0f, 170.0f, -135.0f));
-  points.push_back(cv::Point3d(225.0f, 170.0f, -135.0f));
-  points.push_back(cv::Point3d(-150.0f, -150.0f, -125.0f));
-  points.push_back(cv::Point3d(150.0f, -150.0f, -125.0f));
-  return points;
-}
-
-std::vector<cv::Point2d> _ExtractCameraPoints(dlib::full_object_detection &d) {
-  std::vector<cv::Point2d> points;
-  points.push_back(cv::Point2d(d.part(30).x(), d.part(30).y())); // Nose tip
-  points.push_back(cv::Point2d(d.part(8).x(), d.part(8).y()));   // Chin
-  points.push_back(
-      cv::Point2d(d.part(36).x(), d.part(36).y())); // Left eye left corner
-  points.push_back(
-      cv::Point2d(d.part(45).x(), d.part(45).y())); // Right eye right corner
-  points.push_back(
-      cv::Point2d(d.part(48).x(), d.part(48).y())); // Left Mouth corner
-  points.push_back(
-      cv::Point2d(d.part(54).x(), d.part(54).y())); // Right mouth corner
-  return points;
-}
-
-cv::Mat _ExtractCameraMatrix(float focalLength, cv::Point2d center) {
-  return (cv::Mat_<double>(3, 3) << focalLength, 0, center.x, 0, focalLength,
-          center.y, 0, 0, 1);
 }
 
 FX::Capture::Capture() {}
@@ -103,17 +69,13 @@ void FX::Capture::Start() {
   std::vector<dlib::rectangle> faces;
   dlib::rectangle face;
   dlib::full_object_detection detection;
-  std::vector<cv::Point3d> referencePoints = _ReferencePosePoints();
-  std::vector<cv::Point2d> cameraPoints;
-  cv::Mat cameraMatrix;
-  cv::Mat distCoeffs = cv::Mat::zeros(4, 1, cv::DataType<double>::type);
-  cv::Mat rotationVector;
-  cv::Mat rotationMatrix;
-  cv::Mat translationVector;
+
+  // resolver
+  FX::Resolver resolver;
 
   // counter
   int count = 0;
-  double t = (double)cv::getTickCount();
+  double t = cv::getTickCount();
 
   // the result
   FX::Result result;
@@ -147,7 +109,7 @@ void FX::Capture::Start() {
     }
 
     // find largest face
-    face = *std::max_element(faces.begin(), faces.end(), _CompareRectangleArea)
+    face = *std::max_element(faces.begin(), faces.end(), _compareRectangleArea)
                 .base();
 
     // upscale
@@ -160,32 +122,11 @@ void FX::Capture::Start() {
     detection = predictor(dim, face);
 
     // calculate head pose
-    if (_IsFaceDetectionValid(detection)) {
-      cameraPoints = _ExtractCameraPoints(detection);
-      cameraMatrix = _ExtractCameraMatrix(
-          im.cols, cv::Point2d(im.cols / 2.f, im.rows / 2.f));
+    if (_isFaceDetectionValid(detection)) {
+      // resolve the detection
+      resolver.Resolve(im.cols, im.rows, detection, result);
 
-      cv::solvePnP(referencePoints, cameraPoints, cameraMatrix, distCoeffs,
-                   rotationVector, translationVector);
-
-      result.width = im.cols;
-      result.height = im.rows;
-      result.t0 = translationVector.at<double>(0, 0);
-      result.t1 = translationVector.at<double>(0, 1);
-      result.t2 = translationVector.at<double>(0, 2);
-
-      result.r0 = rotationVector.at<double>(0, 0);
-      result.r1 = rotationVector.at<double>(0, 1);
-      result.r2 = rotationVector.at<double>(0, 2);
-
-      result.m = (detection.part(62) - detection.part(66)).length();
-      result.le = ((detection.part(37) - detection.part(40)).length() +
-                   (detection.part(38) - detection.part(41)).length()) /
-                  2.f;
-      result.re = ((detection.part(43) - detection.part(46)).length() +
-                   (detection.part(44) - detection.part(47)).length()) /
-                  2.f;
-
+      // broadcast
       if (_resultStore != nullptr) {
         _resultStore->Set(result);
       }
@@ -195,7 +136,7 @@ void FX::Capture::Start() {
     // calculate FPS
     count++;
     if (count == 100) {
-      t = ((double)cv::getTickCount() - t) / cv::getTickFrequency();
+      t = (cv::getTickCount() - t) / cv::getTickFrequency();
       count = 0;
       std::cout << "capture: FPS " << 100.0 / t << std::endl;
     }

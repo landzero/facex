@@ -5,8 +5,6 @@
 
 #include "result.h"
 
-#include <dlib/serialize.h>
-
 void FX::Result::Serialize(std::ostream &out) {
   out << width << "," << height << ";";
   out << t0 << "," << t1 << "," << t2 << ";";

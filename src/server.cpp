@@ -5,8 +5,6 @@
 
 #include "server.h"
 
-#include <dlib/logger.h>
-
 FX::Server::Server() : dlib::server_iostream() {}
 
 void FX::Server::SetBind(const std::string &bind) { set_listening_ip(bind); }
