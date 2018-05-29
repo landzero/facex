@@ -14,9 +14,9 @@ int main(int argc, char **argv) {
   cli.add_option("h", "short for 'help'");
   cli.set_group_name("Camera Options");
   cli.add_option("camera", "camera to open, default 0", 1);
-  cli.add_option("fps", "camera fps, default 30", 1);
-  cli.add_option("width", "camera width, default 800", 1);
-  cli.add_option("height", "camera height, default 600", 1);
+  cli.add_option("fps", "set camera fps, may not work, default 30", 1);
+  cli.add_option("width", "set camera width, may not work, default 800", 1);
+  cli.add_option("height", "set camera height, may not work, default 600", 1);
   cli.set_group_name("Server Options");
   cli.add_option("bind", "host to bind, default '127.0.0.1'", 1);
   cli.add_option("port", "port to listen, default 6699", 1);

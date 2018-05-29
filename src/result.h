@@ -17,13 +17,16 @@ namespace FX {
 class Result {
 public:
   // camera size
-  cv::Size2d size;
-  // 68-points standard face landmarks
-  std::vector<cv::Point2d> landmarks;
-  // calculated location of head
-  cv::Point3d location;
-  // calculated face direction
-  cv::Vec3d direction;
+  double width = 0;
+  double height = 0;
+  // translation vector
+  double t0 = 0;
+  double t1 = 0;
+  double t2 = 0;
+  // rotation vector
+  double r0 = 0;
+  double r1 = 0;
+  double r2 = 0;
 
   // serialize result to stream
   void Serialize(std::ostream &out);
