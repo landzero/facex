@@ -122,6 +122,7 @@ void FX::Capture::Start() {
   _cam >> im;
   cv::resize(im, imSmall, cv::Size(), 1.0 / DOWNSCALE_RATIO,
              1.0 / DOWNSCALE_RATIO);
+  std::cout << "capture: size " << im.cols << "x" << im.rows << std::endl;
 
   while (!_stop) {
     // initial tick count
@@ -196,7 +197,7 @@ void FX::Capture::Start() {
     if (count == 100) {
       t = ((double)cv::getTickCount() - t) / cv::getTickFrequency();
       count = 0;
-      std::cout << "camera: FPS " << 100.0 / t << std::endl;
+      std::cout << "capture: FPS " << 100.0 / t << std::endl;
     }
   }
 }

@@ -65,8 +65,7 @@ int main(int argc, char **argv) {
   cap.SetSize(width, height);
   cap.SetFPS(fps);
 
-  std::cout << "camera: opened [" << camera << "] " << width << "x" << height
-            << ", FPS:" << fps << std::endl;
+  std::cout << "camera: opened [" << camera << "]" << std::endl;
 
   cap.Start();
   return EXIT_SUCCESS;
