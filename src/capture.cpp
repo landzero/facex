@@ -177,6 +177,14 @@ void FX::Capture::Start() {
       result.r1 = rotationVector.at<double>(0, 1);
       result.r2 = rotationVector.at<double>(0, 2);
 
+      result.m = (detection.part(62) - detection.part(66)).length();
+      result.le = ((detection.part(37) - detection.part(40)).length() +
+                   (detection.part(38) - detection.part(41)).length()) /
+                  2.f;
+      result.re = ((detection.part(43) - detection.part(46)).length() +
+                   (detection.part(44) - detection.part(47)).length()) /
+                  2.f;
+
       if (_resultStore != nullptr) {
         _resultStore->Set(result);
       }

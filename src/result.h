@@ -27,6 +27,12 @@ public:
   double r0 = 0;
   double r1 = 0;
   double r2 = 0;
+  // left eye open size
+  double le = 0;
+  // right eye open size
+  double re = 0;
+  // mouth open size
+  double m = 0;
 
   // serialize result to stream
   void Serialize(std::ostream &out);
