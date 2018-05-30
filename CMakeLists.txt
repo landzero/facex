@@ -3,7 +3,7 @@ project(facex)
 
 find_package(dlib REQUIRED)
 
-find_package(OpenCV REQUIRED)
+find_package(OpenCV REQUIRED COMPONENTS core videoio calib3d)
 include_directories(${OpenCV_INCLUDE_DIRS})
 
 if(NOT CMAKE_BUILD_TYPE)
