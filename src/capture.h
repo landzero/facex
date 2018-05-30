@@ -17,6 +17,8 @@ public:
 
   ~Capture();
 
+  void SetModelFile(std::string modelFile);
+
   void Open(int idx);
 
   bool IsOpened();
@@ -38,6 +40,8 @@ private:
   bool _stop = false;
   // cv::VideoCapture instance
   cv::VideoCapture _cam;
+  // model file
+  std::string _modelFile;
 };
 } // namespace FX
 

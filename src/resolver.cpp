@@ -5,56 +5,81 @@
 
 #include "resolver.h"
 
-#include <opencv/cv.hpp>
+#define NUM_LANDMARKS 68
 
-void FX::Resolver::Resolve(int cols, int rows,
+bool _isFaceDetectionValid(dlib::full_object_detection &det) {
+  if (det.num_parts() != NUM_LANDMARKS)
+    return false;
+  for (size_t i = 0; i < det.num_parts(); i++)
+    if (det.part(i) == dlib::OBJECT_PART_NOT_PRESENT)
+      return false;
+  return true;
+}
+
+bool FX::Resolver::Resolve(int cols, int rows,
                            dlib::full_object_detection &detection,
-                           FX::Result &result) {
-  result.width = cols;
-  result.height = rows;
+                           FX::Result &res) {
+  if (!_isFaceDetectionValid(detection))
+    return false;
+  FX::Detection det(detection);
+
+  res.w = cols;
+  res.h = rows;
 
   // cameraPoints
-  std::vector<cv::Point2d> cameraPoints;
+  std::vector<cv::Point2d> cp;
   // nose tip
-  cameraPoints.emplace_back(detection.part(30).x(), detection.part(30).y());
+  cp.push_back(det[30]);
   // chin
-  cameraPoints.emplace_back(detection.part(8).x(), detection.part(8).y());
+  cp.push_back(det[8]);
   // left eye left corner
-  cameraPoints.emplace_back(detection.part(36).x(), detection.part(36).y());
+  cp.push_back(det[36]);
   // right eye right corner
-  cameraPoints.emplace_back(detection.part(45).x(), detection.part(45).y());
+  cp.push_back(det[45]);
   // left Mouth corner
-  cameraPoints.emplace_back(detection.part(48).x(), detection.part(48).y());
+  cp.push_back(det[48]);
   // right mouth corner
-  cameraPoints.emplace_back(detection.part(54).x(), detection.part(54).y());
+  cp.push_back(det[54]);
 
-  // cameraMatrix
+  // camera matrix
   cv::Mat_<double> cameraMatrix(3, 3);
   cameraMatrix << cols, 0, cols / 2.f, 0, cols, rows / 2.f, 0, 0, 1;
 
-  // output
-  cv::Mat rotationVector, translationVector;
+  // rotation vector, translation vector
+  cv::Mat rv, tv;
 
   // solve
-  cv::solvePnP(_referencePoints, cameraPoints, cameraMatrix, _distCoeffs,
-               rotationVector, translationVector);
+  cv::solvePnP(_referencePoints, cp, cameraMatrix, _distCoeffs, rv, tv);
 
-  // update result
-  result.t0 = translationVector.at<double>(0, 0);
-  result.t1 = translationVector.at<double>(0, 1);
-  result.t2 = translationVector.at<double>(0, 2);
+  // set rv, tv to result
+  res.t0 = tv.at<double>(0, 0);
+  res.t1 = tv.at<double>(0, 1);
+  res.t2 = tv.at<double>(0, 2);
 
-  result.r0 = rotationVector.at<double>(0, 0);
-  result.r1 = rotationVector.at<double>(0, 1);
-  result.r2 = rotationVector.at<double>(0, 2);
+  res.r0 = rv.at<double>(0, 0);
+  res.r1 = rv.at<double>(0, 1);
+  res.r2 = rv.at<double>(0, 2);
 
-  result.m = (detection.part(62) - detection.part(66)).length();
-  result.le = ((detection.part(37) - detection.part(40)).length() +
-               (detection.part(38) - detection.part(41)).length()) /
-              2.f;
-  result.re = ((detection.part(43) - detection.part(46)).length() +
-               (detection.part(44) - detection.part(47)).length()) /
-              2.f;
+  // use balanced nose length as base
+  double base = det.Dis({{27, 31}, {27, 32}, {27, 33}, {27, 34}, {27, 35}});
+  if (base == 0) {
+    base = 1; // avoid divided by 0
+  }
+  res.base = base;
+
+  // eye size
+  res.le = det.Dis({{37, 40}, {38, 41}}) / base;
+  res.re = det.Dis({{43, 46}, {44, 47}}) / base;
+
+  // eyebrow height
+  res.lb = det.DisP(det.Mid(36, 39), {17, 18, 19, 20, 21}) / base;
+  res.rb = det.DisP(det.Mid(42, 45), {22, 23, 24, 25, 26}) / base;
+
+  // mouth width/height
+  res.mw = det.Dis(60, 64) / base;
+  res.mh = det.Dis(62, 66) / base;
+
+  return true;
 }
 
 FX::Resolver::Resolver() {

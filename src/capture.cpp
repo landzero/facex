@@ -8,17 +8,7 @@
 
 #include <dlib/opencv.h>
 
-#define NUM_LANDMARKS 68
 #define DOWNSCALE_RATIO 4
-
-bool _isFaceDetectionValid(dlib::full_object_detection &det) {
-  if (det.num_parts() != NUM_LANDMARKS)
-    return false;
-  for (size_t i = 0; i < det.num_parts(); i++)
-    if (det.part(i) == dlib::OBJECT_PART_NOT_PRESENT)
-      return false;
-  return true;
-}
 
 bool _compareRectangleArea(dlib::rectangle lhs, dlib::rectangle rhs) {
   return lhs.area() < rhs.area();
@@ -50,13 +40,9 @@ void FX::Capture::Start() {
   // load face predictor
   dlib::shape_predictor predictor;
   try {
-    dlib::deserialize("res/shape_predictor_68_face_landmarks.dat") >> predictor;
+    dlib::deserialize(_modelFile) >> predictor;
   } catch (dlib::serialization_error &e) {
     std::cerr << "failed to load face landmarks model" << std::endl;
-    std::cerr
-        << "download url: "
-           "http://dlib.net/files/shape_predictor_68_face_landmarks.dat.bz2"
-        << std::endl;
     std::cerr << e.what() << std::endl;
     abort();
   } catch (std::exception &e) {
@@ -121,12 +107,8 @@ void FX::Capture::Start() {
     // detect face
     detection = predictor(dim, face);
 
-    // calculate head pose
-    if (_isFaceDetectionValid(detection)) {
-      // resolve the detection
-      resolver.Resolve(im.cols, im.rows, detection, result);
-
-      // broadcast
+    // resolve the detection and broadcast
+    if (resolver.Resolve(im.cols, im.rows, detection, result)) {
       if (_resultStore != nullptr) {
         _resultStore->Set(result);
       }
@@ -144,3 +126,7 @@ void FX::Capture::Start() {
 }
 
 void FX::Capture::Stop() { _stop = true; }
+
+void FX::Capture::SetModelFile(std::string modelFile) {
+  _modelFile = modelFile;
+}

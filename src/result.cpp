@@ -6,10 +6,21 @@
 #include "result.h"
 
 void FX::Result::Serialize(std::ostream &out) {
-  out << width << "," << height << ";";
-  out << t0 << "," << t1 << "," << t2 << ";";
-  out << r0 << "," << r1 << "," << r2 << ";";
-  out << le << "," << re << ";";
-  out << m;
+#define _PUT(V) out << #V << ":" << std::to_string(V) << ";"
+  _PUT(w);
+  _PUT(h);
+  _PUT(t0);
+  _PUT(t1);
+  _PUT(t2);
+  _PUT(r0);
+  _PUT(r1);
+  _PUT(r2);
+  _PUT(le);
+  _PUT(lb);
+  _PUT(re);
+  _PUT(rb);
+  _PUT(mw);
+  _PUT(mh);
+  _PUT(base);
   out << std::endl;
 }

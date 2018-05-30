@@ -17,8 +17,8 @@ namespace FX {
 class Result {
 public:
   // camera size
-  double width = 0;
-  double height = 0;
+  double w = 0;
+  double h = 0;
   // translation vector
   double t0 = 0;
   double t1 = 0;
@@ -27,12 +27,18 @@ public:
   double r0 = 0;
   double r1 = 0;
   double r2 = 0;
-  // left eye open size
+  // eye open size
   double le = 0;
-  // right eye open size
   double re = 0;
-  // mouth open size
-  double m = 0;
+  // eyebrow height
+  double lb = 0;
+  double rb = 0;
+  // mouth width/height
+  double mw = 0;
+  double mh = 0;
+
+  // debug
+  double base = 0;
 
   // serialize result to stream
   void Serialize(std::ostream &out);

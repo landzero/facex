@@ -26,3 +26,21 @@ build with `Release` config for best compiler optimization.
 cmake -DCMAKE_VERBOSE_MAKEFILE=ON -DCMAKE_BUILD_TYPE=Release .
 make
 ```
+
+## Run
+
+```bash
+./facex --help
+```
+
+## Monitor
+
+use `nc` (netcat) to monitor output
+
+```bash
+nc 127.0.0.1 6699
+```
+
+## Protocol
+
+TBD

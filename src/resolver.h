@@ -6,6 +6,7 @@
 #ifndef __FX_RESOLVER_H__
 #define __FX_RESOLVER_H__
 
+#include "detection.h"
 #include "result.h"
 
 #include <dlib/image_processing.h>
@@ -16,7 +17,7 @@ class Resolver {
 public:
   Resolver();
 
-  void Resolve(int cols, int rows, dlib::full_object_detection &detection,
+  bool Resolve(int cols, int rows, dlib::full_object_detection &detection,
                Result &result);
 
 private:
