@@ -60,11 +60,11 @@ bool FX::Resolver::Resolve(int cols, int rows,
   res.r1 = rv.at<double>(0, 1);
   res.r2 = rv.at<double>(0, 2);
 
-  // use balanced nose length as base
-  double base = det.Dis({{27, 31}, {27, 32}, {27, 33}, {27, 34}, {27, 35}});
-  if (base == 0) {
-    base = 1; // avoid divided by 0
-  }
+  // use nose length as base
+  double base = det.Dis(27, 30);
+  if (base == 0)
+    return false;
+
   res.base = base;
 
   // eye size

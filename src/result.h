@@ -37,7 +37,7 @@ public:
   double mw = 0;
   double mh = 0;
 
-  // debug
+  // nose length as base
   double base = 0;
 
   // serialize result to stream

@@ -12,6 +12,8 @@ int main(int argc, char **argv) {
   dlib::command_line_parser cli;
   cli.add_option("help", "display this help message");
   cli.add_option("h", "short for 'help'");
+  cli.add_option("debug", "enable debug mode");
+  cli.add_option("d", "short for 'debug'");
   cli.set_group_name("Model Options");
   cli.add_option(
       "model",
@@ -28,7 +30,7 @@ int main(int argc, char **argv) {
 
   cli.parse(argc, argv);
 
-  const char *one_time_options[] = {"help", "h"};
+  const char *one_time_options[] = {"help", "h", "d", "debug"};
   cli.check_one_time_options(one_time_options);
 
   if (cli.option("help") || cli.option("h")) {
@@ -45,6 +47,7 @@ int main(int argc, char **argv) {
     return EXIT_SUCCESS;
   }
 
+  const bool debug = cli.option("debug") || cli.option("d");
   const int camera = dlib::get_option(cli, "camera", 0);
   const double fps = dlib::get_option(cli, "fps", 30);
   const double width = dlib::get_option(cli, "width", 800);
@@ -58,6 +61,7 @@ int main(int argc, char **argv) {
   FX::Capture cap;
   FX::Server server;
 
+  cap.SetDebug(debug);
   cap.SetModelFile(model);
   cap.SetResultStore(&resultStore);
   server.SetResultStore(&resultStore);

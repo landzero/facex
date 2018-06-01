@@ -23,6 +23,8 @@ public:
 
   bool IsOpened();
 
+  void SetDebug(bool debug);
+
   void SetSize(double width, double height);
 
   void SetFPS(double fps);
@@ -36,6 +38,8 @@ public:
 private:
   // ResultStore to set and broadcast capture result
   ResultStore *_resultStore = nullptr;
+  // debug mode, will show a opencv window
+  bool _debug = false;
   // stop flag
   bool _stop = false;
   // cv::VideoCapture instance
