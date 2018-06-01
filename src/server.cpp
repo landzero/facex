@@ -15,16 +15,10 @@ void FX::Server::Start() { start(); }
 
 void FX::Server::StartAsync() { start_async(); }
 
-void FX::Server::SetResultStore(FX::ResultStore *resultStore) {
-  _resultStore = resultStore;
-}
+void FX::Server::SetResultStore(FX::ResultStore *resultStore) { _resultStore = resultStore; }
 
-void FX::Server::on_connect(std::istream &in, std::ostream &out,
-                            const std::string &foreign_ip,
-                            const std::string &local_ip,
-                            unsigned short foreign_port,
-                            unsigned short local_port,
-                            dlib::uint64 connection_id) {
+void FX::Server::on_connect(std::istream &in, std::ostream &out, const std::string &foreign_ip, const std::string &local_ip, unsigned short foreign_port,
+                            unsigned short local_port, dlib::uint64 connection_id) {
   (void)in;
   (void)foreign_ip;
   (void)local_ip;
@@ -35,6 +29,5 @@ void FX::Server::on_connect(std::istream &in, std::ostream &out,
     _resultStore->Get().Serialize(out);
     _resultStore->Wait();
   }
-  std::cout << "server: connection [" << connection_id << "] closed"
-            << std::endl;
+  std::cout << "server: connection [" << connection_id << "] closed" << std::endl;
 }

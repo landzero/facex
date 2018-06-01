@@ -17,8 +17,10 @@ class Resolver {
 public:
   Resolver();
 
-  bool Resolve(int cols, int rows, dlib::full_object_detection &detection,
-               Result &result);
+  bool Resolve(int cols, int rows, Detection &detection, Result &result);
+
+private:
+  void stabilizeDetection(Detection &det);
 
 private:
   std::vector<cv::Point3d> _referencePoints;

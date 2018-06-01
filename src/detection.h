@@ -14,7 +14,13 @@
 namespace FX {
 class Detection {
 public:
-  Detection(dlib::full_object_detection &det);
+  Detection();
+
+  Detection(const dlib::full_object_detection &det);
+
+  bool IsInvalid();
+
+  size_t Count();
 
   double Dis(int i, int j);
 
@@ -24,10 +30,11 @@ public:
 
   cv::Point2d Mid(int i, int j);
 
-  cv::Point2d &operator[](const int index);
+  cv::Point2d &operator[](size_t index);
 
 private:
   std::vector<cv::Point2d> _points;
+  bool _invalid = false;
 };
 } // namespace FX
 

@@ -5,23 +5,11 @@
 
 #include "resolver.h"
 
-#define NUM_LANDMARKS 68
-
-bool _isFaceDetectionValid(dlib::full_object_detection &det) {
-  if (det.num_parts() != NUM_LANDMARKS)
+bool FX::Resolver::Resolve(int cols, int rows, Detection &det, FX::Result &res) {
+  if (det.IsInvalid())
     return false;
-  for (size_t i = 0; i < det.num_parts(); i++)
-    if (det.part(i) == dlib::OBJECT_PART_NOT_PRESENT)
-      return false;
-  return true;
-}
 
-bool FX::Resolver::Resolve(int cols, int rows,
-                           dlib::full_object_detection &detection,
-                           FX::Result &res) {
-  if (!_isFaceDetectionValid(detection))
-    return false;
-  FX::Detection det(detection);
+  stabilizeDetection(det);
 
   res.w = cols;
   res.h = rows;
@@ -94,4 +82,9 @@ FX::Resolver::Resolver() {
 
   // initialize distCoeffs
   _distCoeffs = cv::Mat::zeros(4, 1, cv::DataType<double>::type);
+}
+
+void FX::Resolver::stabilizeDetection(FX::Detection &det) {
+  // TODO: find a way to stabilize detection
+  (void)det;
 }

@@ -15,10 +15,7 @@ int main(int argc, char **argv) {
   cli.add_option("debug", "enable debug mode");
   cli.add_option("d", "short for 'debug'");
   cli.set_group_name("Model Options");
-  cli.add_option(
-      "model",
-      "dlib model file, default './res/shape_predictor_68_face_landmarks.dat'",
-      1);
+  cli.add_option("model", "dlib model file, default './res/shape_predictor_68_face_landmarks.dat'", 1);
   cli.set_group_name("Camera Options");
   cli.add_option("camera", "camera to open, default 0", 1);
   cli.add_option("fps", "set camera fps, may not work, default 30", 1);
@@ -40,10 +37,7 @@ int main(int argc, char **argv) {
               << std::endl
               << std::endl;
     cli.print_options();
-    std::cout
-        << "dlib model file download url: " << std::endl
-        << "  http://dlib.net/files/shape_predictor_68_face_landmarks.dat.bz2"
-        << std::endl;
+    std::cout << "dlib model file download url: " << std::endl << "  http://dlib.net/files/shape_predictor_68_face_landmarks.dat.bz2" << std::endl;
     return EXIT_SUCCESS;
   }
 
@@ -54,8 +48,7 @@ int main(int argc, char **argv) {
   const double height = dlib::get_option(cli, "height", 600);
   const std::string bind = dlib::get_option(cli, "bind", "127.0.0.1");
   const int port = dlib::get_option(cli, "port", 6699);
-  const std::string model = dlib::get_option(
-      cli, "model", "res/shape_predictor_68_face_landmarks.dat");
+  const std::string model = dlib::get_option(cli, "model", "res/shape_predictor_68_face_landmarks.dat");
 
   FX::ResultStore resultStore;
   FX::Capture cap;

@@ -5,15 +5,28 @@
 
 #include "detection.h"
 
-FX::Detection::Detection(dlib::full_object_detection &det) {
+FX::Detection::Detection() { _invalid = true; }
+
+FX::Detection::Detection(const dlib::full_object_detection &det) {
+  if (det.num_parts() != 68) {
+    _invalid = true;
+    return;
+  }
   for (size_t i = 0; i < det.num_parts(); i++) {
-    _points.emplace_back(det.part(i).x(), det.part(i).y());
+    dlib::point p = det.part(i);
+    if (p == dlib::OBJECT_PART_NOT_PRESENT) {
+      _invalid = true;
+      return;
+    }
+    _points.emplace_back(p.x(), p.y());
   }
 }
 
-double FX::Detection::Dis(int i, int j) {
-  return cv::norm(_points[i] - _points[j]);
-}
+size_t FX::Detection::Count() { return _points.size(); }
+
+bool FX::Detection::IsInvalid() { return _invalid; }
+
+double FX::Detection::Dis(int i, int j) { return cv::norm(_points[i] - _points[j]); }
 
 double FX::Detection::Dis(std::vector<std::vector<int>> list) {
   if (list.empty())
@@ -35,10 +48,6 @@ double FX::Detection::DisP(cv::Point2d p, std::vector<int> list) {
   return total / list.size();
 }
 
-cv::Point2d FX::Detection::Mid(int i, int j) {
-  return (_points[i] + _points[j]) / 2;
-}
+cv::Point2d FX::Detection::Mid(int i, int j) { return (_points[i] + _points[j]) / 2; }
 
-cv::Point2d &FX::Detection::operator[](const int index) {
-  return _points[index];
-}
+cv::Point2d &FX::Detection::operator[](size_t index) { return _points[index]; }
