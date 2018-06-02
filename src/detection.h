@@ -32,6 +32,8 @@ public:
 
   cv::Point2d &operator[](size_t index);
 
+  double operator-(Detection &rdet);
+
 private:
   std::vector<cv::Point2d> _points;
   bool _invalid = false;

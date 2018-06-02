@@ -9,7 +9,10 @@ bool FX::Resolver::Resolve(int cols, int rows, Detection &det, FX::Result &res) 
   if (det.IsInvalid())
     return false;
 
-  stabilizeDetection(det);
+  // use nose length as base
+  double base = det.Dis(27, 30);
+  if (base == 0)
+    return false;
 
   res.w = cols;
   res.h = rows;
@@ -48,16 +51,11 @@ bool FX::Resolver::Resolve(int cols, int rows, Detection &det, FX::Result &res) 
   res.r1 = rv.at<double>(0, 1);
   res.r2 = rv.at<double>(0, 2);
 
-  // use nose length as base
-  double base = det.Dis(27, 30);
-  if (base == 0)
-    return false;
-
   res.base = base;
 
   // eye size
-  res.le = det.Dis({{37, 40}, {38, 41}}) / base;
-  res.re = det.Dis({{43, 46}, {44, 47}}) / base;
+  res.le = det.Dis({{37, 41}, {38, 40}}) / base;
+  res.re = det.Dis({{43, 47}, {44, 46}}) / base;
 
   // eyebrow height
   res.lb = det.DisP(det.Mid(36, 39), {17, 18, 19, 20, 21}) / base;
@@ -73,18 +71,13 @@ bool FX::Resolver::Resolve(int cols, int rows, Detection &det, FX::Result &res) 
 FX::Resolver::Resolver() {
   // initialize reference points
   // The first must be (0,0,0) while using POSIT
-  _referencePoints.emplace_back(0.0f, 0.0f, 0.0f);
-  _referencePoints.emplace_back(0.0f, -330.0f, -65.0f);
-  _referencePoints.emplace_back(-225.0f, 170.0f, -135.0f);
-  _referencePoints.emplace_back(225.0f, 170.0f, -135.0f);
-  _referencePoints.emplace_back(-150.0f, -150.0f, -125.0f);
-  _referencePoints.emplace_back(150.0f, -150.0f, -125.0f);
+  _referencePoints.emplace_back(0.0f, 0.0f, 0.0f);          // 30
+  _referencePoints.emplace_back(0.0f, -330.0f, -65.0f);     // 8
+  _referencePoints.emplace_back(-225.0f, 170.0f, -135.0f);  // 36
+  _referencePoints.emplace_back(225.0f, 170.0f, -135.0f);   // 45
+  _referencePoints.emplace_back(-150.0f, -150.0f, -125.0f); // 48
+  _referencePoints.emplace_back(150.0f, -150.0f, -125.0f);  // 54
 
   // initialize distCoeffs
   _distCoeffs = cv::Mat::zeros(4, 1, cv::DataType<double>::type);
-}
-
-void FX::Resolver::stabilizeDetection(FX::Detection &det) {
-  // TODO: find a way to stabilize detection
-  (void)det;
 }

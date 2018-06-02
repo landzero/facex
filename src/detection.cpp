@@ -51,3 +51,11 @@ double FX::Detection::DisP(cv::Point2d p, std::vector<int> list) {
 cv::Point2d FX::Detection::Mid(int i, int j) { return (_points[i] + _points[j]) / 2; }
 
 cv::Point2d &FX::Detection::operator[](size_t index) { return _points[index]; }
+
+double FX::Detection::operator-(Detection &rdet) {
+  double total = 0;
+  for (size_t i = 0; i < Count(); i++) {
+    total += cv::norm(_points[i] - rdet[i]);
+  }
+  return cv::sqrt(total);
+}

@@ -25,11 +25,11 @@ void _cvDrawDetection(cv::Mat &im, FX::Detection &det, FX::Result &res) {
   // nose size
   _cvDrawLine(im, det, 27, 30);
   // left eye
-  _cvDrawLine(im, det, 37, 40);
-  _cvDrawLine(im, det, 38, 41);
+  _cvDrawLine(im, det, 37, 41);
+  _cvDrawLine(im, det, 38, 40);
   // right eye
-  _cvDrawLine(im, det, 43, 46);
-  _cvDrawLine(im, det, 44, 47);
+  _cvDrawLine(im, det, 43, 47);
+  _cvDrawLine(im, det, 44, 46);
   // left eyebrow
   _cvDrawLine(im, det, 36, 39, 17);
   _cvDrawLine(im, det, 36, 39, 18);

@@ -20,9 +20,6 @@ public:
   bool Resolve(int cols, int rows, Detection &detection, Result &result);
 
 private:
-  void stabilizeDetection(Detection &det);
-
-private:
   std::vector<cv::Point3d> _referencePoints;
   cv::Mat _distCoeffs;
 };
